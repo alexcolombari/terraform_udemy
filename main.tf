@@ -32,111 +32,49 @@ resource "aws_vpc" "main" {
   }
 }
 
-resource "aws_subnet" "public_a" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.1.0/24"
-  availability_zone       = "eu-central-1a"
-  map_public_ip_on_launch = true
+resource "aws_subnet" "subnet" {
+  count             = var.subnet_count
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.subnet_cidr_blocks[count.index]
+  availability_zone = var.availability_zones[count.index]
 
   tags = {
-    Name        = "${local.name_prefix}public-subnet-eu-central-1a"
-    Environment = local.common_tags.Environment
-    Project     = local.common_tags.Project
-    Owner       = local.common_tags.Owner
-    CostCenter  = local.common_tags.CostCenter
-    Region      = local.common_tags.Region
-    ManagedBy   = local.common_tags.ManagedBy
-    Tier        = "public"
+    Name = "subnet-${count.index + 1}"
   }
 }
 
-resource "aws_subnet" "public_b" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.2.0/24"
-  availability_zone       = "eu-central-1b"
-  map_public_ip_on_launch = true
+# Create multiple route tables
+resource "aws_route_table" "example_route_table" {
+  count = var.route_table_count
+  vpc_id = aws_vpc.main.id
 
   tags = {
-    Name        = "${local.name_prefix}public-subnet-eu-central-1b"
-    Environment = local.common_tags.Environment
-    Project     = local.common_tags.Project
-    Owner       = local.common_tags.Owner
-    CostCenter  = local.common_tags.CostCenter
-    Region      = local.common_tags.Region
-    ManagedBy   = local.common_tags.ManagedBy
-    Tier        = "public"
+    Name = "route-table-${count.index + 1}"
   }
 }
 
-resource "aws_subnet" "private_a" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.3.0/24"
-  availability_zone       = "eu-central-1a"
-  map_public_ip_on_launch = false
-
-  tags = {
-    Name        = "${local.name_prefix}private-subnet-eu-central-1a"
-    Environment = local.common_tags.Environment
-    Project     = local.common_tags.Project
-    Owner       = local.common_tags.Owner
-    CostCenter  = local.common_tags.CostCenter
-    Region      = local.common_tags.Region
-    ManagedBy   = local.common_tags.ManagedBy
-    Tier        = "private"
-  }
-}
-
-resource "aws_subnet" "private_b" {
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = "10.0.4.0/24"
-  availability_zone       = "eu-central-1b"
-  map_public_ip_on_launch = false
-
-  tags = {
-    Name        = "${local.name_prefix}private-subnet-eu-central-1b"
-    Environment = local.common_tags.Environment
-    Project     = local.common_tags.Project
-    Owner       = local.common_tags.Owner
-    CostCenter  = local.common_tags.CostCenter
-    Region      = local.common_tags.Region
-    ManagedBy   = local.common_tags.ManagedBy
-    Tier        = "private"
-  }
-}
-
-resource "aws_security_group" "web" {
-  name        = "${local.name_prefix}web-sg"
-  description = "allows web traffic"
+# Create multiple security group
+resource "aws_security_group" "sg" {
+  count       = 3
+  name        = "${var.security_groups[count.index].name}-sg"
+  description = var.security_groups[count.index].description
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = var.security_groups[count.index].ingress_port
+    to_port     = var.security_groups[count.index].ingress_port
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = ["10.0.0.0/16"]
   }
 
   egress {
     from_port   = 0
     to_port     = 0
-    protocol    = "-1"
+    protocol    = "-1" # -1 means all protocols
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
-    Name        = "${local.name_prefix}web-sg"
-    Environment = local.common_tags.Environment
-    Project     = local.common_tags.Project
-    Owner       = local.common_tags.Owner
-    CostCenter  = local.common_tags.CostCenter
-    Region      = local.common_tags.Region
-    ManagedBy   = local.common_tags.ManagedBy
+    Name = "${var.security_groups[count.index].name}-sg"
   }
 }

@@ -1,29 +1,24 @@
 output "vpc_id" {
-  description = "ID of the VPC"
+  description = "The ID of the VPC"
   value       = aws_vpc.main.id
 }
 
-output "public_subnet_a_id" {
-  description = "ID of the Subnet Public A"
-  value       = aws_subnet.public_a.id
+output "subnet_ids" {
+  description = "The IDs of the subnets"
+  value       = aws_subnet.subnet[*].id
 }
 
-output "public_subnet_b_id" {
-  description = "ID of the Subnet Public B"
-  value       = aws_subnet.public_b.id
+output "subnet_cidr_blocks" {
+  description = "The CIDR blocks of the subnets"
+  value       = aws_subnet.subnet[*].cidr_block
 }
 
-output "private_subnet_a_id" {
-  description = "ID of the Subnet Private A"
-  value       = aws_subnet.private_a.id
+output "security_group_ids" {
+  description = "The IDs of the security groups"
+  value       = aws_security_group.sg[*].id
 }
 
-output "private_subnet_b_id" {
-  description = "ID of the Subnet Private B"
-  value       = aws_subnet.private_b.id
-}
-
-output "security_group_id" {
-  description = "ID of the Security Group"
-  value       = aws_security_group.web.id
+output "route_table_ids" {
+  description = "The ID of the route tables"
+  value = aws_route_table.example_route_table[*].id
 }

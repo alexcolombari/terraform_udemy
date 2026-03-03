@@ -25,7 +25,7 @@ variable "subnet_count" {
 variable "availability_zones" {
   description = "Availability zones for subnets"
   type        = list(string)
-  default     = ["eu-central-1a", "eu-central-1b", "eu-central-2"]
+  default     = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]
 }
 
 variable "subnet_cidr_blocks" {
@@ -57,4 +57,10 @@ variable "security_groups" {
       ingress_port = 3306
     }
   ]
+}
+
+variable "route_table_count" {
+  description = "Number of route tables to create"
+  type = number
+  default = 2
 }
