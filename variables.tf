@@ -58,3 +58,9 @@ variable "security_groups" {
     }
   ]
 }
+
+variable "route_table_count" {
+  description = "Number of route tables to create"
+  type = number
+  default = 2
+}
