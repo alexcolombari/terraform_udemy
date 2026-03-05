@@ -22,45 +22,51 @@ variable "subnet_count" {
   default     = 3
 }
 
-variable "availability_zones" {
-  description = "Availability zones for subnets"
-  type        = list(string)
-  default     = ["eu-central-1a", "eu-central-1b", "eu-central-1c"]
+variable "subnet_config" {
+  description = "Map of subnet configuration"
+  type        = map(string)
+  default = {
+    "public"   = "10.0.10.0/24"
+    "private1" = "10.0.20.0/24"
+  }
 }
 
-variable "subnet_cidr_blocks" {
-  description = "CIDR Blocks for subnets"
-  type        = list(string)
-  default     = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+variable "subnet_azs" {
+  description = "Map of subnet Availability Zones"
+  type        = map(string)
+  default = {
+    "public"   = "eu-central-1a"
+    "private1" = "eu-central-1b"
+  }
 }
 
-variable "security_groups" {
-  description = "SG configurations"
-  type = list(object({
-    name         = string
-    description  = string
-    ingress_port = number
-  }))
-  default = [{
-    name         = "web"
-    description  = "Allow web traffic"
-    ingress_port = 80
-    },
-    {
-      name         = "app"
-      description  = "Allow application traffic"
-      ingress_port = 8080
-    },
-    {
-      name         = "db"
-      description  = "Allow database traffic"
-      ingress_port = 3306
-    }
-  ]
+variable "security_group_config" {
+  description = "Map of Security Group configuration"
+  type        = map(string)
+  default = {
+    "web"   = 80
+    "app"   = 8080
+    "db"    = 3306
+    "cache" = 6379
+  }
 }
 
-variable "route_table_count" {
-  description = "Number of route tables to create"
-  type = number
-  default = 2
+variable "route_tables" {
+  description = "Map of route tables configuration"
+  type        = map(string)
+  default = {
+    "public"   = "Public route table"
+    "private1" = "Private route table 1"
+    "private2" = "Private route table 2"
+  }
+}
+
+variable "iam_users" {
+  description = "Map of users configuration"
+  type        = map(string)
+  default = {
+    "user1" = "Public route table"
+    "user2" = "Private route table 1"
+    "user3" = "Private route table 2"
+  }
 }
